@@ -1,11 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const { addFoodEntry } = require("../controllers/foodEntryController");
+const {
+  addFoodEntry,
+  updateFoodEntry,
+  deleteFoodEntry,
+  listFoodEntries,
+  listUserFoodEntries,
+} = require("../controllers/foodEntryController");
 const { protect } = require("../middleware/authMiddleware");
 
-router.post("/add", addFoodEntry);
-router.post("/update", addFoodEntry);
-router.post("/delete", addFoodEntry);
-router.get("/list", addFoodEntry);
+router.post("/add", protect, addFoodEntry);
+router.post("/update", protect, updateFoodEntry);
+router.post("/delete", protect, deleteFoodEntry);
+router.get("/listEntries", protect, listUserFoodEntries);
+router.get("/adminlist", protect, listFoodEntries);
 
 module.exports = router;

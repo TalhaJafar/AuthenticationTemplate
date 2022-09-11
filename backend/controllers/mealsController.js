@@ -13,29 +13,41 @@ const listMeals = asyncHandler(async (req, res) => {
 
 const addMeal = asyncHandler(async (req, res) => {
   const { name, limit } = req.body;
-  // Create Meals
-  const meal = await Meals.create({ name, limit });
-  if (meal) {
-    res.status(201).json(meal);
+  const { isAdmin } = req.user;
+  if (isAdmin) {
+    const meal = await Meals.create({ name, limit });
+    if (meal) {
+      res.status(201).json(meal);
+    } else {
+      res.status(400);
+      throw new Error("Error while adding meal");
+    }
   } else {
     res.status(400);
-    throw new Error("Error while adding meal");
+    throw new Error("Only Admin can add Meal");
   }
 });
 
 const updateMeal = asyncHandler(async (req, res) => {
   const { id, name, limit } = req.body;
-  // Update Meal
-  const entry = await Meals.findByIdAndUpdate(
-    id,
-    { name, limit },
-    { new: true }
-  );
-  if (entry) {
-    res.status(201).json(entry);
+  const { isAdmin } = req.user;
+
+  if (isAdmin) {
+    // Update Meal
+    const entry = await Meals.findByIdAndUpdate(
+      id,
+      { name, limit },
+      { new: true }
+    );
+    if (entry) {
+      res.status(201).json(entry);
+    } else {
+      res.status(400);
+      throw new Error("Invalid Meal Entry");
+    }
   } else {
     res.status(400);
-    throw new Error("Invalid Meal Entry");
+    throw new Error("Only Admin can Update Meal");
   }
 });
 

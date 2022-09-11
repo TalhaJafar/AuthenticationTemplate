@@ -8,9 +8,9 @@ const {
 } = require("../controllers/mealsController");
 const { protect } = require("../middleware/authMiddleware");
 
-router.post("/add", addMeal);
-router.post("/update", updateMeal);
-router.delete("/delete", deleteMeal);
+router.post("/add", protect, addMeal);
+router.post("/update", protect, updateMeal);
+router.delete("/delete", protect, deleteMeal);
 router.get("/list", listMeals);
 
 module.exports = router;

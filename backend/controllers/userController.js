@@ -75,7 +75,10 @@ const getToken = asyncHandler(async (req, res) => {
   if (userExists) {
     const { _id, email, name, isAdmin } = userExists;
     const userToken = generateToken({ id: _id, email, name, isAdmin });
-    res.status(200).json(userToken);
+    res.status(200).json({
+      token: userToken,
+      user: { name: name, id: _id, email, isAdmin },
+    });
   } else {
     res.status(400);
     throw new Error("Invalid credentials");

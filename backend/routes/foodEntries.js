@@ -11,7 +11,7 @@ const { protect } = require("../middleware/authMiddleware");
 
 router.post("/add", protect, addFoodEntry);
 router.post("/update", protect, updateFoodEntry);
-router.post("/delete", protect, deleteFoodEntry);
+router.delete("/delete", protect, deleteFoodEntry);
 router.get("/listEntries", protect, listUserFoodEntries);
 router.get("/adminlist", protect, listFoodEntries);
 

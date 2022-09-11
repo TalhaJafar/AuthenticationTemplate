@@ -2,22 +2,20 @@ const asyncHandler = require("express-async-handler");
 const FoodEntry = require("../models/foodEntriesModel");
 const Meals = require("../models/mealsModel");
 
-const listFoodEntries = asyncHandler(async (req, res) => {
-  const entry = await FoodEntry.find();
-  if (entry) {
-    res.status(201).json(entry);
-  } else {
-    res.status(400);
-    throw new Error("No entries exist");
-  }
-});
-
 const addFoodEntry = asyncHandler(async (req, res) => {
   const { userId, date, caloriesConsumed, dayFoodEntries } = req.body;
   const { id, isAdmin } = req.user;
 
   if (id === userId || isAdmin) {
     const convertedDate = new Date(date).toISOString();
+
+    const entryCheck = await FoodEntry.find({ userId, date: convertedDate });
+    console.log(entryCheck, "Entry Check ");
+    if (entryCheck.length) {
+      res.status(400);
+      throw new Error("Same Day entry against user already exists");
+    }
+
     const obj = {
       userId,
       date: convertedDate,
@@ -81,7 +79,7 @@ const updateFoodEntry = asyncHandler(async (req, res) => {
       });
 
       const entry = await FoodEntry.findOneAndUpdate(
-        foodEntryId,
+        { _id: foodEntryId },
         updatedEntry,
         { new: true }
       );
@@ -100,10 +98,10 @@ const updateFoodEntry = asyncHandler(async (req, res) => {
 });
 
 const deleteFoodEntry = asyncHandler(async (req, res) => {
-  const { foodEntryId, userId } = req.body;
+  const { foodEntryId } = req.body;
   const { id, isAdmin } = req.user;
 
-  if (userId === id || isAdmin) {
+  if (id || isAdmin) {
     const entry = await FoodEntry.deleteOne({ _id: foodEntryId });
     if (entry) {
       res.status(201).json(entry);
@@ -119,7 +117,17 @@ const deleteFoodEntry = asyncHandler(async (req, res) => {
 
 const listUserFoodEntries = asyncHandler(async (req, res) => {
   const { id } = req.user;
-  const entry = await FoodEntry.find({ id });
+  const entry = await FoodEntry.find({ _id: id });
+  if (entry) {
+    res.status(201).json(entry);
+  } else {
+    res.status(400);
+    throw new Error("No entries exist");
+  }
+});
+
+const listFoodEntries = asyncHandler(async (req, res) => {
+  const entry = await FoodEntry.find();
   if (entry) {
     res.status(201).json(entry);
   } else {

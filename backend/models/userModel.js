@@ -11,12 +11,13 @@ const userSchema = mongoose.Schema(
       required: [true, "Please add an email"],
       unique: true,
     },
-    password: {
-      type: String,
-      required: [true, "Please add a password"],
-    },
+    // password: {
+    //   type: String,
+    //   required: [true, "Please add a password"],
+    // },
     caloriesTarget: {
       type: Number,
+      default: 2100,
     },
     isAdmin: {
       type: Boolean,

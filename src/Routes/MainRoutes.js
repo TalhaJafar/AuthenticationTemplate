@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import Button from "react-bootstrap/Button";
 import ProtectedRoutes from "./ProtectedRoutes";
 import { Landing, Home } from "../Pages";
 import AdminDashbored from "../Pages/AdminDashbored";
@@ -8,7 +9,11 @@ const MainRoutes = () => {
   const { user, onLogout } = useAuth();
   return (
     <>
-      {user && <button onClick={onLogout}>Logout</button>}
+      {user && (
+        <Button variant="danger" onClick={onLogout}>
+          Logout
+        </Button>
+      )}
       <Routes>
         <Route index element={<Landing />} />
         <Route path="landing" element={<Landing />} />

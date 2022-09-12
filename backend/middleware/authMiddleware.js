@@ -15,9 +15,10 @@ const protect = asyncHandler(async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       // Get user from the token
       const user = await User.findById(decoded.id);
-      if(user){
-        req.user = user
-      }else{
+      if (user) {
+        req.user = user;
+        req.token = token;
+      } else {
         throw new Error("Token not Valid");
       }
       next();

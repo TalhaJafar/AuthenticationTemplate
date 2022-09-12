@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { getSystemAccess } from "../Services/users";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import toast from "react-hot-toast";
+import { getSystemAccess } from "../Services/users";
 import { useAuth } from "../Contexts/AuthContext";
 const Landing = () => {
   const [email, setEmail] = useState("");
@@ -19,10 +22,20 @@ const Landing = () => {
     return <Navigate to={user.isAdmin ? "admin/dashbored" : "home"} replace />;
   }
   return (
-    <div>
-      <h1>Provide Email</h1>
-      <input value={email} onChange={(e) => setEmail(e.target.value)} />
-      <button onClick={handleGetAccess}>Get Access</button>
+    <div className="landingPage-container">
+      <h4>Enter your email to login</h4>
+      <InputGroup className="mb-3">
+        <Form.Control
+          placeholder="Enter Email Address Here ..."
+          aria-label="Email"
+          aria-describedby="basic-addon1"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Button variant="primary" onClick={handleGetAccess}>
+          Get Access
+        </Button>
+      </InputGroup>
     </div>
   );
 };

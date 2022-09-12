@@ -1,0 +1,8 @@
+.actions-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.action-icon:hover {
+  cursor: pointer;
+}

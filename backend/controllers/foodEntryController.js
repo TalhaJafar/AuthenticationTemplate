@@ -3,7 +3,8 @@ const FoodEntry = require("../models/foodEntriesModel");
 const Meals = require("../models/mealsModel");
 
 const addFoodEntry = asyncHandler(async (req, res) => {
-  const { userId, date, caloriesConsumed, dayFoodEntries } = req.body;
+  const { userId, date, caloriesTarget, caloriesConsumed, dayFoodEntries } =
+    req.body;
   const { id, isAdmin } = req.user;
 
   if (id === userId || isAdmin) {
@@ -19,6 +20,7 @@ const addFoodEntry = asyncHandler(async (req, res) => {
     const obj = {
       userId,
       date: convertedDate,
+      caloriesTarget,
       caloriesConsumed,
       dayFoodEntries,
     };
@@ -51,8 +53,14 @@ const addFoodEntry = asyncHandler(async (req, res) => {
 });
 
 const updateFoodEntry = asyncHandler(async (req, res) => {
-  const { foodEntryId, userId, date, caloriesConsumed, dayFoodEntries } =
-    req.body;
+  const {
+    foodEntryId,
+    userId,
+    date,
+    caloriesTarget,
+    caloriesConsumed,
+    dayFoodEntries,
+  } = req.body;
   const { id, isAdmin } = req.user;
 
   if (id === userId || isAdmin) {
@@ -61,6 +69,7 @@ const updateFoodEntry = asyncHandler(async (req, res) => {
     const updatedEntry = {
       userId,
       date: convertedDate,
+      caloriesTarget,
       caloriesConsumed,
       dayFoodEntries,
     };
@@ -101,7 +110,7 @@ const deleteFoodEntry = asyncHandler(async (req, res) => {
   const { foodEntryId } = req.body;
   const { id, isAdmin } = req.user;
 
-  if (id || isAdmin) {
+  if ((id || isAdmin) && foodEntryId) {
     const entry = await FoodEntry.deleteOne({ _id: foodEntryId });
     if (entry) {
       res.status(201).json(entry);
@@ -111,13 +120,16 @@ const deleteFoodEntry = asyncHandler(async (req, res) => {
     }
   } else {
     res.status(400);
-    throw new Error("Invalid user data");
+    throw new Error("Error occured");
   }
 });
 
 const listUserFoodEntries = asyncHandler(async (req, res) => {
   const { id } = req.user;
-  const entry = await FoodEntry.find({ userId: id });
+  const entry = await FoodEntry.find({ userId: id })
+    .sort({ date: "desc" })
+    .populate({ path: "userId", select: "name" })
+    .populate({ path: "dayFoodEntries.mealId", select: "name" });
   if (entry) {
     res.status(201).json(entry);
   } else {
@@ -127,7 +139,10 @@ const listUserFoodEntries = asyncHandler(async (req, res) => {
 });
 
 const listFoodEntries = asyncHandler(async (req, res) => {
-  const entry = await FoodEntry.find();
+  const entry = await FoodEntry.find()
+    .sort({ date: "desc" })
+    .populate({ path: "userId", select: "name" })
+    .populate({ path: "dayFoodEntries.mealId", select: "name" });
   if (entry) {
     res.status(201).json(entry);
   } else {

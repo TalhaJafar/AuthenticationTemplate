@@ -117,7 +117,7 @@ const deleteFoodEntry = asyncHandler(async (req, res) => {
 
 const listUserFoodEntries = asyncHandler(async (req, res) => {
   const { id } = req.user;
-  const entry = await FoodEntry.find({ _id: id });
+  const entry = await FoodEntry.find({ userId: id });
   if (entry) {
     res.status(201).json(entry);
   } else {

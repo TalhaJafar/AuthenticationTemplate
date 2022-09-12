@@ -21,3 +21,15 @@ export const getUser = () => {
       toast.error("Invalid Access Token");
     });
 };
+
+export const getAllUsers = () => {
+  return axiosPrivate
+    .get("users/listUsers")
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      toast.error("Invalid Access Token");
+    });
+};
+

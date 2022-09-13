@@ -42,13 +42,13 @@ const registerUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const { caloriesTarget } = req.body;
   const { id } = req.user;
-
+  console.log(req.body, id);
   const updateUser = await User.findByIdAndUpdate(
-    id,
+    { _id: id },
     { caloriesTarget },
     { new: true }
   );
-
+  console.log(updateUser);
   if (updateUser) {
     res.status(201).json(updateUser);
   } else {
@@ -73,11 +73,11 @@ const getToken = asyncHandler(async (req, res) => {
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    const { _id, email, name, isAdmin } = userExists;
+    const { _id, email, name, caloriesTarget, isAdmin } = userExists;
     const userToken = generateToken({ id: _id, email, name, isAdmin });
     res.status(200).json({
       token: userToken,
-      user: { name: name, id: _id, email, isAdmin },
+      user: { name: name, caloriesTarget, id: _id, email, isAdmin },
     });
   } else {
     res.status(400);

@@ -24,11 +24,16 @@ const AuthProvider = ({ children }) => {
     localStorage.setItem("accessToken", "");
   };
 
+  const handleCalorieChange = (obj) => {
+    setAuthValue({ user: obj });
+  };
+
   const value = {
     user: authValue.user,
     token: authValue.token,
     onLogin: handleOnLogin,
     onLogout: handleOnLogout,
+    handleCalorieChange: handleCalorieChange,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

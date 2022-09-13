@@ -11,10 +11,14 @@ const addFoodEntry = asyncHandler(async (req, res) => {
     const convertedDate = new Date(date).toISOString();
 
     const entryCheck = await FoodEntry.find({ userId, date: convertedDate });
-    console.log(entryCheck, "Entry Check ");
     if (entryCheck.length) {
       res.status(400);
       throw new Error("Same Day entry against user already exists");
+    }
+
+    if (dayFoodEntries.length === 0) {
+      res.status(400);
+      throw new Error("Add Meals in the records");
     }
 
     const obj = {
@@ -66,6 +70,17 @@ const updateFoodEntry = asyncHandler(async (req, res) => {
   if (id === userId || isAdmin) {
     const convertedDate = new Date(date).toISOString();
 
+    const entryCheck = await FoodEntry.find({ userId, date: convertedDate });
+    if (entryCheck.length) {
+      res.status(400);
+      throw new Error("Same Day entry against user already exists");
+    }
+
+    if (dayFoodEntries.length === 0) {
+      res.status(400);
+      throw new Error("Add Meals in the records");
+    }
+
     const updatedEntry = {
       userId,
       date: convertedDate,
@@ -80,7 +95,6 @@ const updateFoodEntry = asyncHandler(async (req, res) => {
       dayFoodEntries.forEach((element) => {
         const { mealId, mealFoods } = element;
         const meal = mealsList.find((x) => x._id.toString() === mealId);
-        console.log(meal, "meal");
         if (meal === undefined || mealFoods.length > meal?.limit) {
           res.status(400);
           throw new Error("Meal Error or limit exceeding");
@@ -97,7 +111,7 @@ const updateFoodEntry = asyncHandler(async (req, res) => {
         res.status(201).json(entry);
       } else {
         res.status(400);
-        throw new Error("Invalid user data");
+        throw new Error("Record not Updated Successfully");
       }
     }
   } else {
@@ -126,10 +140,15 @@ const deleteFoodEntry = asyncHandler(async (req, res) => {
 
 const listUserFoodEntries = asyncHandler(async (req, res) => {
   const { id } = req.user;
-  const entry = await FoodEntry.find({ userId: id })
+  const { startDate, endDate } = req.query;
+  let filter = {};
+  if (startDate && endDate) {
+    filter = { date: { $gte: startDate, $lte: endDate } };
+  }
+  const entry = await FoodEntry.find({ $and: [{ userId: id }, filter] })
     .sort({ date: "desc" })
-    .populate({ path: "userId", select: "name" })
-    .populate({ path: "dayFoodEntries.mealId", select: "name" });
+    .populate({ path: "userId", select: "name" });
+  // .populate({ path: "dayFoodEntries.mealId", select: "name" });
   if (entry) {
     res.status(201).json(entry);
   } else {
@@ -139,12 +158,61 @@ const listUserFoodEntries = asyncHandler(async (req, res) => {
 });
 
 const listFoodEntries = asyncHandler(async (req, res) => {
-  const entry = await FoodEntry.find()
+  const { startDate, endDate } = req.query;
+  const { isAdmin } = req.user;
+
+  if (!isAdmin) {
+    res.status(400);
+    throw new Error("Not Authorized");
+  }
+
+  let query = {};
+  if (startDate && endDate) {
+    query = { date: { $gte: startDate, $lte: endDate } };
+  }
+
+  const entry = await FoodEntry.find(query)
     .sort({ date: "desc" })
-    .populate({ path: "userId", select: "name" })
-    .populate({ path: "dayFoodEntries.mealId", select: "name" });
+    .populate({ path: "userId", select: "name" });
+  // .populate({ path: "dayFoodEntries.mealId", select: "name" });
   if (entry) {
     res.status(201).json(entry);
+  } else {
+    res.status(400);
+    throw new Error("No entries exist");
+  }
+});
+
+const adminReport = asyncHandler(async (req, res) => {
+  const { isAdmin } = req.user;
+
+  if (!isAdmin) {
+    res.status(400);
+    throw new Error("Not Authorized");
+  }
+
+  const startDate = new Date(
+    new Date().getTime() - 14 * 24 * 60 * 60 * 1000
+  ).toDateString();
+  const endDate = new Date().toDateString();
+
+  let query = {};
+  if (startDate && endDate) {
+    query = { date: { $gte: startDate, $lte: endDate } };
+  }
+
+  console.log(startDate, endDate, "dates");
+
+  const results = await FoodEntry.find(query)
+    .sort({ date: "desc" })
+    .populate({ path: "userId", select: "name" });
+
+  console.log(results, "Results");
+
+  if (results) {
+    let foodItems = [];
+
+    res.status(201).json(foodItems);
   } else {
     res.status(400);
     throw new Error("No entries exist");
@@ -157,4 +225,5 @@ module.exports = {
   addFoodEntry,
   updateFoodEntry,
   deleteFoodEntry,
+  adminReport,
 };

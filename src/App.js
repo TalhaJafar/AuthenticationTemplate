@@ -4,6 +4,7 @@ import MainRoutes from "./Routes";
 import { Toaster } from "react-hot-toast";
 import { Container } from "react-bootstrap";
 import "./Styles/global.css";
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
   return (

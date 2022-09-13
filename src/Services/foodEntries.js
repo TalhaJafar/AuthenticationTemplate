@@ -1,9 +1,9 @@
 import { axiosPrivate } from "../Configs/axios";
 import toast from "react-hot-toast";
 
-export const getUserFoodEntries = () => {
+export const getUserFoodEntries = (filters) => {
   return axiosPrivate
-    .get("foodEntry/listEntries")
+    .get("foodEntry/listEntries", { params: filters })
     .then((res) => {
       return res.data;
     })
@@ -12,14 +12,16 @@ export const getUserFoodEntries = () => {
     });
 };
 
-export const getAdminFoodEntries = () => {
+export const getAdminFoodEntries = (filters) => {
+  console.log(filters, "filters heree");
   return axiosPrivate
-    .get("foodEntry/adminlist")
+    .get("foodEntry/adminlist", { params: filters })
     .then((res) => {
       return res.data;
     })
     .catch((error) => {
       toast.error(error.response.data.message);
+      throw new Error(error);
     });
 };
 
@@ -44,6 +46,7 @@ export const updateFoodEntry = (entry) => {
       return res.data;
     })
     .catch((error) => {
+      console.log(error);
       toast.error(error.response.data.message);
     });
 };

@@ -4,7 +4,7 @@ import Table from "react-bootstrap/Table";
 import Accordion from "react-bootstrap/Accordion";
 
 const ViewableModal = (props) => {
-  const { action, selectedItem, handleDelete, onHide } = props;
+  const { action, selectedItem, handleDelete, onHide, meals } = props;
   const { dayFoodEntries, date, caloriesConsumed, userId } = selectedItem;
   return (
     <Modal
@@ -39,10 +39,11 @@ const ViewableModal = (props) => {
               {dayFoodEntries &&
                 dayFoodEntries.map((item, index) => {
                   const { mealId, mealFoods } = item;
+                  const meal = meals.find((x) => x._id === mealId);
                   return (
                     <div className="d-flex flex-column w-100">
                       <Accordion.Item eventKey={index}>
-                        <Accordion.Header>{mealId.name}</Accordion.Header>
+                        <Accordion.Header>{meal.name}</Accordion.Header>
                         <Accordion.Body>
                           <Table bordered hover>
                             <thead>

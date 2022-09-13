@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
+import DatePicker from "react-datepicker";
 import { IoEye, IoPencil, IoTrash } from "react-icons/io5";
 import toast from "react-hot-toast";
 import {
@@ -25,36 +26,51 @@ const FoodEntriesListing = () => {
   const [foodEntries, setfoodEntries] = useState([]);
   const [action, setAction] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [fetchData, setFetch] = useState(true);
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
+  );
+  const [endDate, setEndDate] = useState(new Date());
 
   useEffect(() => {
-    listMeals().then((res) => {
-      setMeals(res);
-    });
+    if (fetchData) {
+      listMeals().then((res) => {
+        setMeals(res);
+      });
+      const filters = {
+        startDate: startDate.toDateString(),
+        endDate: endDate.toDateString(),
+      };
 
-    if (isAdmin) {
-      getAllUsers().then((res) => {
-        setUsers(res);
-      });
-      getAdminFoodEntries().then((res) => {
-        setfoodEntries(res);
-      });
-    } else {
-      getUserFoodEntries().then((res) => {
-        setfoodEntries(res);
-      });
+      if (isAdmin) {
+        getAllUsers().then((res) => {
+          setUsers(res);
+        });
+        getAdminFoodEntries(filters).then((res) => {
+          setfoodEntries(res);
+        });
+      } else {
+        getUserFoodEntries(filters).then((res) => {
+          setfoodEntries(res);
+        });
+      }
     }
-  }, []);
+
+    setFetch(false);
+  }, [fetchData]);
 
   const handleActionIcons = ({ id, action }) => {
     const entry = foodEntries.find((x) => x._id === id);
+
+    console.log(entry, "asdfsdfa");
     setSelectedItem(entry);
     setAction(action);
   };
 
   const handleEditableModal = (record) => {
-    if (action === "add") {
-    } else if (action === "edit") {
-    }
+    setFetch(true);
+    setAction(null);
+    setSelectedItem(null);
   };
 
   const handleDelete = () => {
@@ -65,9 +81,24 @@ const FoodEntriesListing = () => {
         );
         setAction(null);
         setSelectedItem(null);
-        toast.success("Successfully Deleted");
       })
       .catch((err) => toast.error("Error in Deleting"));
+  };
+
+  const handleFilter = () => {
+    const filters = {
+      startDate: startDate.toDateString(),
+      endDate: endDate.toDateString(),
+    };
+    if (isAdmin) {
+      getAdminFoodEntries(filters).then((res) => {
+        setfoodEntries(res);
+      });
+    } else {
+      getUserFoodEntries(filters).then((res) => {
+        setfoodEntries(res);
+      });
+    }
   };
 
   return (
@@ -79,6 +110,27 @@ const FoodEntriesListing = () => {
       >
         Add Entry
       </Button>
+
+      <div className="d-flex align-items-center">
+        <div>
+          Start Date:{" "}
+          <DatePicker
+            selected={startDate}
+            className="form-control"
+            onChange={(date) => setStartDate(date)}
+          />
+        </div>
+        <div>
+          End Date
+          <DatePicker
+            selected={endDate}
+            className="form-control"
+            onChange={(date) => setEndDate(date)}
+          />
+        </div>
+        <Button onClick={handleFilter}>Apply Filter</Button>
+      </div>
+
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -140,6 +192,7 @@ const FoodEntriesListing = () => {
         {(action === "view" || action === "delete") && (
           <ViewableModal
             action={action}
+            meals={meals}
             selectedItem={selectedItem}
             handleDelete={handleDelete}
             show={action === "view" || action === "delete" ? true : false}

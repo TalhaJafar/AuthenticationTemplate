@@ -15,6 +15,7 @@ export const getUser = () => {
   return axiosPrivate
     .get("users/getUser")
     .then((res) => {
+      console.log(res.data);
       return res.data;
     })
     .catch((error) => {
@@ -33,3 +34,13 @@ export const getAllUsers = () => {
     });
 };
 
+export const updateCaloriesTarget = (entry) => {
+  return axiosPrivate
+    .post("users/updateUser", entry)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      toast.error("Invalid Access Token");
+    });
+};

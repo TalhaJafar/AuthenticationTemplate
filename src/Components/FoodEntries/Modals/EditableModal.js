@@ -6,14 +6,17 @@ import DatePicker from "react-datepicker";
 import Table from "react-bootstrap/Table";
 import { IoTrash } from "react-icons/io5";
 import { addFoodEntry, updateFoodEntry } from "../../../Services/foodEntries";
-
-import "react-datepicker/dist/react-datepicker.css";
-import toast from "react-hot-toast";
+import { useAuth } from "../../../Contexts/AuthContext";
 
 const EditableModal = (props) => {
-  const { action, selectedItem, onHide, meals, users, isAdmin } = props;
+  const { action, selectedItem, meals, users, isAdmin, handleAction } = props;
+  const { user } = useAuth();
 
-  const [selectedUser, setSelectedUser] = useState(users[0]?._id);
+  console.log(selectedItem, "SelectedItem");
+
+  const [selectedUser, setSelectedUser] = useState(
+    isAdmin ? users[0]?._id : user.id
+  );
   const [startDate, setStartDate] = useState(new Date());
   const [enteredMeals, setEnteredMeals] = useState([]);
   const [targetedCalories, setTargetedCalories] = useState(2100);
@@ -23,12 +26,23 @@ const EditableModal = (props) => {
     if (isAdmin && action === "edit") {
       const {
         userId: { _id },
+        dayFoodEntries,
+        date,
       } = selectedItem;
       const userData = users.find((x) => x._id === _id);
+      setStartDate(new Date(date));
+      setEnteredMeals(dayFoodEntries);
       setTargetedCalories(userData.caloriesTarget);
-    } else if (action === "add") {
+    } else if (isAdmin && action === "add") {
       const userData = users.find((x) => x._id === selectedUser);
       setTargetedCalories(userData.caloriesTarget);
+    } else if (!isAdmin && action === "edit") {
+      const { dayFoodEntries, date } = selectedItem;
+      setTargetedCalories(user.caloriesTarget);
+      setEnteredMeals(dayFoodEntries);
+      setStartDate(new Date(date));
+    } else if (!isAdmin && action === "add") {
+      setTargetedCalories(user.caloriesTarget);
     }
   }, [selectedUser]);
 
@@ -79,10 +93,20 @@ const EditableModal = (props) => {
     }
   };
 
+  const handleEntryDelete = (id, index) => {
+    const mealExists = enteredMeals.findIndex((x) => x.mealId === id);
+    if (mealExists !== -1) {
+      let newEntries = [...enteredMeals];
+      newEntries[mealExists].mealFoods.splice(index, 1);
+      setEnteredMeals([...newEntries]);
+    }
+  };
+
   const handleSave = () => {
     const obj = {
+      foodEntryId: selectedItem?._id,
       userId: selectedUser,
-      date: startDate,
+      date: new Date(startDate).toDateString(),
       caloriesTarget: targetedCalories,
       caloriesConsumed: consumedCalories,
       dayFoodEntries: enteredMeals,
@@ -90,19 +114,15 @@ const EditableModal = (props) => {
     if (action === "add") {
       addFoodEntry(obj)
         .then((res) => {
-          console.log(res);
+          handleAction();
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => {});
     } else if (action === "edit") {
       updateFoodEntry(obj)
         .then((res) => {
-          console.log(res);
+          handleAction();
         })
-        .catch((err) => {
-          console.log(err, "eeee");
-        });
+        .catch((err) => {});
     }
   };
 
@@ -247,7 +267,11 @@ const EditableModal = (props) => {
                             ></Form.Control>
                           </td>
                           <td>
-                            <IoTrash />
+                            <IoTrash
+                              onClick={() => {
+                                handleEntryDelete(mealId, index);
+                              }}
+                            />
                           </td>
                         </tr>
                       );

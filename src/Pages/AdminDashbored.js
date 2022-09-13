@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import FoodEntriesListing from "../Components/FoodEntries/FoodEntriesListing";
 import UserListing from "../Components/UserListing/usersListings";
-import { useAuth } from "../Contexts/AuthContext";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
 const AdminDashbored = () => {
-  const { user } = useAuth();
-  const { isAdmin } = user;
   const [key, setKey] = useState("entries");
   return (
-    <div>
-      <h1> AdminDashbored Page</h1>
+    <div className="mt-5 mb-5">
+      <h1 className="mt-5 mb-5"> AdminDashbored Page</h1>
       <Tabs
         id="controlled-tab-example"
         activeKey={key}
@@ -19,7 +16,7 @@ const AdminDashbored = () => {
         className="mb-3"
       >
         <Tab eventKey="entries" title="Food Entries">
-          <FoodEntriesListing isAdmin={isAdmin} />
+          <FoodEntriesListing />
         </Tab>
         <Tab eventKey="reports" title="Reports">
           <UserListing />

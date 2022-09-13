@@ -8,7 +8,7 @@ export const getUserFoodEntries = () => {
       return res.data;
     })
     .catch((error) => {
-      toast.error("Invalid Access Token");
+      toast.error(error.response.data.message);
     });
 };
 
@@ -19,7 +19,7 @@ export const getAdminFoodEntries = () => {
       return res.data;
     })
     .catch((error) => {
-      toast.error("Invalid Access Token");
+      toast.error(error.response.data.message);
     });
 };
 
@@ -27,10 +27,12 @@ export const addFoodEntry = (entry) => {
   return axiosPrivate
     .post("foodEntry/add", entry)
     .then((res) => {
+      toast.success("Operation Finished");
       return res.data;
     })
     .catch((error) => {
-      toast.error("Invalid Access Token");
+      console.log(error);
+      toast.error(error.response.data.message);
     });
 };
 
@@ -38,21 +40,22 @@ export const updateFoodEntry = (entry) => {
   return axiosPrivate
     .post("foodEntry/update", entry)
     .then((res) => {
+      toast.success("Operation Finished");
       return res.data;
     })
     .catch((error) => {
-      toast.error("Invalid Access Token");
+      toast.error(error.response.data.message);
     });
 };
 
 export const deleteFoodEntry = (entry) => {
-  console.log(entry, "entry");
   return axiosPrivate
     .delete("foodEntry/delete", { data: entry })
     .then((res) => {
+      toast.success("Operation Finished");
       return res.data;
     })
     .catch((error) => {
-      toast.error("Invalid Access Token");
+      toast.error(error.response.data.message);
     });
 };

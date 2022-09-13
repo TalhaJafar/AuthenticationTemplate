@@ -12,10 +12,14 @@ import { listMeals } from "../../Services/meals";
 import { getAllUsers } from "../../Services/users";
 import ViewableModal from "./Modals/ViewableModal";
 import EditableModal from "./Modals/EditableModal";
+import { useAuth } from "../../Contexts/AuthContext";
 
 import "./styles.css";
 
-const FoodEntriesListing = ({ isAdmin = false }) => {
+const FoodEntriesListing = () => {
+  const { user } = useAuth();
+  const { isAdmin } = user;
+
   const [users, setUsers] = useState([]);
   const [meals, setMeals] = useState([]);
   const [foodEntries, setfoodEntries] = useState([]);
@@ -47,10 +51,15 @@ const FoodEntriesListing = ({ isAdmin = false }) => {
     setAction(action);
   };
 
+  const handleEditableModal = (record) => {
+    if (action === "add") {
+    } else if (action === "edit") {
+    }
+  };
+
   const handleDelete = () => {
     deleteFoodEntry({ foodEntryId: selectedItem._id })
       .then((res) => {
-        console.log(res);
         setfoodEntries(
           foodEntries.filter((item) => item._id !== selectedItem._id)
         );
@@ -63,7 +72,11 @@ const FoodEntriesListing = ({ isAdmin = false }) => {
 
   return (
     <>
-      <Button variant="primary" onClick={() => setAction("add")}>
+      <Button
+        variant="primary"
+        onClick={() => setAction("add")}
+        className="mt-2 mb-2"
+      >
         Add Entry
       </Button>
       <Table striped bordered hover>
@@ -78,12 +91,18 @@ const FoodEntriesListing = ({ isAdmin = false }) => {
         </thead>
         <tbody>
           {foodEntries.map((item) => {
-            const { _id, caloriesConsumed, date, dayFoodEntries, userId } =
-              item;
+            const {
+              _id,
+              caloriesConsumed,
+              caloriesTarget,
+              date,
+              dayFoodEntries,
+              userId,
+            } = item;
             return (
               <tr>
                 <td>{userId.name}</td>
-                <td>{}</td>
+                <td>{caloriesTarget && caloriesTarget}</td>
                 <td>{caloriesConsumed}</td>
                 <td>{new Date(date).toDateString()}</td>
                 <td className="actions-row">
@@ -118,24 +137,33 @@ const FoodEntriesListing = ({ isAdmin = false }) => {
             );
           })}
         </tbody>
-        <ViewableModal
-          action={action}
-          selectedItem={selectedItem}
-          handleDelete={handleDelete}
-          show={action === "view" || action === "delete" ? true : false}
-          onHide={() => {
-            setAction(null);
-            setSelectedItem(null);
-          }}
-        />
-        <EditableModal
-          selectedItem={selectedItem}
-          show={action === "edit" || action === "add" ? true : false}
-          onHide={() => {
-            setAction(null);
-            setSelectedItem(null);
-          }}
-        />
+        {(action === "view" || action === "delete") && (
+          <ViewableModal
+            action={action}
+            selectedItem={selectedItem}
+            handleDelete={handleDelete}
+            show={action === "view" || action === "delete" ? true : false}
+            onHide={() => {
+              setAction(null);
+              setSelectedItem(null);
+            }}
+          />
+        )}
+        {(action === "edit" || action === "add") && (
+          <EditableModal
+            action={action}
+            selectedItem={selectedItem}
+            meals={meals}
+            isAdmin={isAdmin}
+            users={users}
+            show={action === "edit" || action === "add" ? true : false}
+            handleAction={handleEditableModal}
+            onHide={() => {
+              setAction(null);
+              setSelectedItem(null);
+            }}
+          />
+        )}
       </Table>
     </>
   );

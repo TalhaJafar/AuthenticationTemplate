@@ -70,11 +70,11 @@ const updateFoodEntry = asyncHandler(async (req, res) => {
   if (id === userId || isAdmin) {
     const convertedDate = new Date(date).toISOString();
 
-    const entryCheck = await FoodEntry.find({ userId, date: convertedDate });
-    if (entryCheck.length) {
-      res.status(400);
-      throw new Error("Same Day entry against user already exists");
-    }
+    // const entryCheck = await FoodEntry.find({ userId, date: convertedDate });
+    // if (entryCheck.length) {
+    //   res.status(400);
+    //   throw new Error("Same Day entry against user already exists");
+    // }
 
     if (dayFoodEntries.length === 0) {
       res.status(400);

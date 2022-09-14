@@ -110,8 +110,8 @@ const FoodEntriesListing = () => {
         Add Entry
       </Button>
 
-      <div className="d-flex align-items-center">
-        <div>
+      <div className="d-flex align-items-end justify-content-end mx-2 my-3">
+        <div className="mx-2">
           Start Date:{" "}
           <DatePicker
             selected={startDate}
@@ -119,7 +119,7 @@ const FoodEntriesListing = () => {
             onChange={(date) => setStartDate(date)}
           />
         </div>
-        <div>
+        <div className="mx-2">
           End Date
           <DatePicker
             selected={endDate}
@@ -127,7 +127,9 @@ const FoodEntriesListing = () => {
             onChange={(date) => setEndDate(date)}
           />
         </div>
-        <Button onClick={handleFilter}>Apply Filter</Button>
+        <div>
+          <Button onClick={handleFilter}>Apply Filter</Button>
+        </div>
       </div>
 
       <Table striped bordered hover>

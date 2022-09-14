@@ -30,6 +30,7 @@ const EditableModal = (props) => {
         date,
       } = selectedItem;
       const userData = users.find((x) => x._id === _id);
+      setSelectedUser(_id);
       setStartDate(new Date(date));
       setEnteredMeals(dayFoodEntries);
       setTargetedCalories(userData.caloriesTarget);
@@ -185,11 +186,15 @@ const EditableModal = (props) => {
           <Form.Group className="mb-3">
             <Form.Label>Select Date</Form.Label>
 
-            <DatePicker
-              selected={startDate}
-              className="form-control"
-              onChange={(date) => setStartDate(date)}
-            />
+            {action === "add" ? (
+              <DatePicker
+                selected={startDate}
+                className="form-control"
+                onChange={(date) => setStartDate(date)}
+              />
+            ) : (
+              <div>{new Date(startDate).toDateString()}</div>
+            )}
           </Form.Group>
 
           <div className="d-flex align-items-center justify-content-between">

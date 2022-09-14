@@ -1,7 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const FoodEntry = require("../models/foodEntriesModel");
 const Meals = require("../models/mealsModel");
-const Users = require("../models/userModel")
 
 const addFoodEntry = asyncHandler(async (req, res) => {
   const { userId, date, caloriesTarget, caloriesConsumed, dayFoodEntries } =
@@ -184,89 +183,10 @@ const listFoodEntries = asyncHandler(async (req, res) => {
   }
 });
 
-const adminReport = asyncHandler(async (req, res) => {
-  const { isAdmin } = req.user;
-
-  if (!isAdmin) {
-    res.status(400);
-    throw new Error("Not Authorized");
-  }
-
-  const startDate = new Date(
-    new Date().getTime() - 14 * 24 * 60 * 60 * 1000
-  ).toDateString();
-  const endDate = new Date().toDateString();
-
-  const thresholdDate = new Date(
-    new Date().getTime() - 7 * 24 * 60 * 60 * 1000
-  ).toDateString();
-
-  let query = {};
-  if (startDate && endDate) {
-    query = { date: { $gte: new Date(startDate), $lte: new Date(endDate) } };
-  }
-
-  console.log(startDate, endDate, "dates");
-
-  const results = await FoodEntry.aggregate([ 
-    { $match: query },
-    { $unwind:{path:"$dayFoodEntries"}}
-  ])
-
-  if (results) {
-    let currentWeekResults= []
-    let previousWeekResults= []
-
-    results.forEach((item)=>{
-      const {_id, userId, date, caloriesConsumed,  dayFoodEntries:{mealFoods}} = item
-
-      if(new Date (date) >= new Date(thresholdDate)){
-        const checkExist = currentWeekResults.findIndex(x => x.id.toString() === _id.toString())
-        if(checkExist === -1 ){
-          const obj ={ 
-            id: _id,
-            userId: userId,
-            date,
-            caloriesTotal: caloriesConsumed,
-            items: mealFoods.length
-          }
-          currentWeekResults.push(obj)
-        }else{
-          const itemsCount = currentWeekResults[checkExist].items + mealFoods.length
-          currentWeekResults[checkExist].items = itemsCount
-        }
-      }else{
-        const checkExist = previousWeekResults.findIndex(x => x.id === _id)
-        if(checkExist === -1 ){
-          const obj ={ 
-            id: _id,
-            userId: userId,
-            date,
-            caloriesTotal: caloriesConsumed,
-            items: mealFoods.length
-          }
-          previousWeekResults.push(obj)
-        }else{
-          const itemsCount = previousWeekResults[checkExist].items + mealFoods.length
-          previousWeekResults[checkExist].items = itemsCount
-        }
-      }
-      
-
-    })
-
-    res.status(201).json({currentWeekResults, previousWeekResults});
-  } else {
-    res.status(400);
-    throw new Error("No entries exist");
-  }
-});
-
 module.exports = {
   listFoodEntries,
   listUserFoodEntries,
   addFoodEntry,
   updateFoodEntry,
   deleteFoodEntry,
-  adminReport,
 };

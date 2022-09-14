@@ -42,13 +42,11 @@ const registerUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const { caloriesTarget } = req.body;
   const { id } = req.user;
-  console.log(req.body, id);
   const updateUser = await User.findByIdAndUpdate(
     { _id: id },
     { caloriesTarget },
     { new: true }
   );
-  console.log(updateUser);
   if (updateUser) {
     res.status(201).json(updateUser);
   } else {

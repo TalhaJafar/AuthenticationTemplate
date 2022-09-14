@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import FoodEntriesListing from "../Components/FoodEntries/FoodEntriesListing";
-// import UserListing from "../Components/UserListing/usersListings";
+import Reports from "../Components/Reports/AdminReports";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
@@ -19,7 +19,7 @@ const AdminDashbored = () => {
           <FoodEntriesListing />
         </Tab>
         <Tab eventKey="reports" title="Reports">
-          {/* <UserListing /> */}
+          <Reports />
         </Tab>
       </Tabs>
     </div>

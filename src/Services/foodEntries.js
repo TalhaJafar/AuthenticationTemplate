@@ -13,7 +13,6 @@ export const getUserFoodEntries = (filters) => {
 };
 
 export const getAdminFoodEntries = (filters) => {
-  console.log(filters, "filters heree");
   return axiosPrivate
     .get("foodEntry/adminlist", { params: filters })
     .then((res) => {

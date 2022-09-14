@@ -15,7 +15,6 @@ export const getUser = () => {
   return axiosPrivate
     .get("users/getUser")
     .then((res) => {
-      console.log(res.data);
       return res.data;
     })
     .catch((error) => {

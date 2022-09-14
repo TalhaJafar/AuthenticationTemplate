@@ -9,7 +9,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (tokenRef.current && !authValue.user) {
       const token = tokenRef.current;
-      getUser().then((user) => setAuthValue({ user: user, token }));
+      getUser().then((user) => setAuthValue({ user: user.user, token }));
     }
     tokenRef.current = null;
   }, [tokenRef]);

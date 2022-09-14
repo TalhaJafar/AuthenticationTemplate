@@ -62,7 +62,6 @@ const FoodEntriesListing = () => {
   const handleActionIcons = ({ id, action }) => {
     const entry = foodEntries.find((x) => x._id === id);
 
-    console.log(entry, "asdfsdfa");
     setSelectedItem(entry);
     setAction(action);
   };
@@ -143,16 +142,10 @@ const FoodEntriesListing = () => {
         </thead>
         <tbody>
           {foodEntries.map((item) => {
-            const {
-              _id,
-              caloriesConsumed,
-              caloriesTarget,
-              date,
-              dayFoodEntries,
-              userId,
-            } = item;
+            const { _id, caloriesConsumed, caloriesTarget, date, userId } =
+              item;
             return (
-              <tr>
+              <tr key={_id}>
                 <td>{userId.name}</td>
                 <td>{caloriesTarget && caloriesTarget}</td>
                 <td>{caloriesConsumed}</td>

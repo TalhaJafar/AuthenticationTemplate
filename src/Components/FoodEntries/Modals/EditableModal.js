@@ -251,6 +251,7 @@ const EditableModal = (props) => {
                               onChange={(e) => {
                                 handleEntryChange(mealId, index, e);
                               }}
+                              required={true}
                               value={itemName}
                             ></Form.Control>
                           </td>
@@ -260,6 +261,7 @@ const EditableModal = (props) => {
                               type="number"
                               min={0}
                               defaultValue={0}
+                              required={true}
                               onChange={(e) => {
                                 handleEntryChange(mealId, index, e);
                               }}

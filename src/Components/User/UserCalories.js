@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -9,7 +9,10 @@ const UsersListing = () => {
   const { user, handleCalorieChange } = useAuth();
 
   const [CaloriesTarget, setCaloriesTarget] = useState(user.caloriesTarget);
-  console.log(user, "lop");
+
+  useEffect(() => {
+    setCaloriesTarget(user.caloriesTarget);
+  }, [user]);
 
   const handleUpdate = () => {
     updateCaloriesTarget({ caloriesTarget: CaloriesTarget })

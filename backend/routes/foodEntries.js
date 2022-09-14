@@ -6,7 +6,6 @@ const {
   deleteFoodEntry,
   listFoodEntries,
   listUserFoodEntries,
-  adminReport,
 } = require("../controllers/foodEntryController");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -15,6 +14,5 @@ router.post("/update", protect, updateFoodEntry);
 router.delete("/delete", protect, deleteFoodEntry);
 router.get("/listEntries", protect, listUserFoodEntries);
 router.get("/adminlist", protect, listFoodEntries);
-router.get("/reports", protect, adminReport);
 
 module.exports = router;

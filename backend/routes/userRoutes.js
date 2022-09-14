@@ -13,6 +13,6 @@ router.post("/createUser", registerUser);
 router.post("/updateUser", protect, updateUser);
 router.get("/listUsers", protect, listAllUsers);
 router.post("/getToken", getToken);
-router.post("/getUser", protect, getUser);
+router.get("/getUser", protect, getUser);
 
 module.exports = router;

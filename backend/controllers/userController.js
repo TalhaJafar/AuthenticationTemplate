@@ -63,7 +63,14 @@ const generateToken = ({ id, email, name, isAdmin }) => {
 };
 
 const getUser = asyncHandler(async (req, res) => {
-  res.status(200).json({ user: req.user, token: req.token });
+  const { _id, name, email, caloriesTarget, isAdmin } = req.user;
+
+  res
+    .status(200)
+    .json({
+      user: { name: name, caloriesTarget, id: _id, email, isAdmin },
+      token: req.token,
+    });
 });
 
 const getToken = asyncHandler(async (req, res) => {

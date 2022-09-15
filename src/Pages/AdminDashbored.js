@@ -16,10 +16,10 @@ const AdminDashbored = () => {
         className="mb-3"
       >
         <Tab eventKey="entries" title="Food Entries">
-          <FoodEntriesListing />
+          {key === "entries" && <FoodEntriesListing />}
         </Tab>
         <Tab eventKey="reports" title="Reports">
-          <Reports />
+          {key === "reports" && <Reports />}
         </Tab>
       </Tabs>
     </div>

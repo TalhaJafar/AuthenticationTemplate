@@ -17,10 +17,10 @@ const Home = () => {
         className="mb-3"
       >
         <Tab eventKey="entries" title="Food Entries">
-          <FoodEntriesListing />
+          {key === "entries" && <FoodEntriesListing />}
         </Tab>
         <Tab eventKey="setting" title="Update Calorie Target">
-          <UserSettings />
+          {key === "setting" && <UserSettings />}
         </Tab>
       </Tabs>
     </>

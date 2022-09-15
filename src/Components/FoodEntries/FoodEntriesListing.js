@@ -33,19 +33,24 @@ const FoodEntriesListing = () => {
   const [endDate, setEndDate] = useState(new Date());
 
   useEffect(() => {
-    if (fetchData) {
-      listMeals().then((res) => {
-        setMeals(res);
+    listMeals().then((res) => {
+      setMeals(res);
+    });
+
+    if (isAdmin) {
+      getAllUsers().then((res) => {
+        setUsers(res);
       });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (fetchData) {
       const filters = {
         startDate: startDate.toDateString(),
         endDate: endDate.toDateString(),
       };
-
       if (isAdmin) {
-        getAllUsers().then((res) => {
-          setUsers(res);
-        });
         getAdminFoodEntries(filters).then((res) => {
           setfoodEntries(res);
         });
@@ -55,7 +60,6 @@ const FoodEntriesListing = () => {
         });
       }
     }
-
     setFetch(false);
   }, [fetchData]);
 
@@ -143,46 +147,57 @@ const FoodEntriesListing = () => {
           </tr>
         </thead>
         <tbody>
-          {foodEntries.map((item) => {
-            const { _id, caloriesConsumed, caloriesTarget, date, userId } =
-              item;
-            return (
-              <tr key={_id}>
-                <td>{userId.name}</td>
-                <td>{caloriesTarget && caloriesTarget}</td>
-                <td>{caloriesConsumed}</td>
-                <td>{new Date(date).toDateString()}</td>
-                <td className="actions-row">
-                  <span
-                    className="action-icon"
-                    onClick={() =>
-                      handleActionIcons({ id: _id, action: "view" })
+          {foodEntries &&
+            foodEntries.map((item) => {
+              const { _id, caloriesConsumed, caloriesTarget, date, userId } =
+                item;
+              return (
+                <tr key={_id}>
+                  <td>{userId?.name}</td>
+                  <td className="text-secondary">
+                    <b>{caloriesTarget && caloriesTarget}</b>
+                  </td>
+                  <td
+                    className={
+                      caloriesConsumed === caloriesTarget
+                        ? "text-success"
+                        : "text-danger"
                     }
                   >
-                    <IoEye />
-                  </span>
+                    <b>{caloriesConsumed}</b>
+                  </td>
+                  <td>{new Date(date).toDateString()}</td>
+                  <td className="actions-row">
+                    <span
+                      className="action-icon"
+                      onClick={() =>
+                        handleActionIcons({ id: _id, action: "view" })
+                      }
+                    >
+                      <IoEye />
+                    </span>
 
-                  <span
-                    className="action-icon"
-                    onClick={() =>
-                      handleActionIcons({ id: _id, action: "edit" })
-                    }
-                  >
-                    <IoPencil />
-                  </span>
+                    <span
+                      className="action-icon"
+                      onClick={() =>
+                        handleActionIcons({ id: _id, action: "edit" })
+                      }
+                    >
+                      <IoPencil />
+                    </span>
 
-                  <span
-                    className="action-icon"
-                    onClick={() =>
-                      handleActionIcons({ id: _id, action: "delete" })
-                    }
-                  >
-                    <IoTrash />
-                  </span>
-                </td>
-              </tr>
-            );
-          })}
+                    <span
+                      className="action-icon"
+                      onClick={() =>
+                        handleActionIcons({ id: _id, action: "delete" })
+                      }
+                    >
+                      <IoTrash />
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
         {(action === "view" || action === "delete") && (
           <ViewableModal

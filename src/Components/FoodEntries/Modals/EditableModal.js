@@ -28,22 +28,30 @@ const EditableModal = (props) => {
         userId: { _id },
         dayFoodEntries,
         date,
+        caloriesTarget,
       } = selectedItem;
       const userData = users.find((x) => x._id === _id);
       setSelectedUser(_id);
       setStartDate(new Date(date));
       setEnteredMeals(dayFoodEntries);
-      setTargetedCalories(userData.caloriesTarget);
+      setTargetedCalories(caloriesTarget);
     } else if (isAdmin && action === "add") {
       const userData = users.find((x) => x._id === selectedUser);
       setTargetedCalories(userData.caloriesTarget);
     } else if (!isAdmin && action === "edit") {
-      const { dayFoodEntries, date } = selectedItem;
-      setTargetedCalories(user.caloriesTarget);
+      const {
+        dayFoodEntries,
+        date,
+        caloriesTarget,
+        userId: { _id },
+      } = selectedItem;
+      setTargetedCalories(caloriesTarget);
       setEnteredMeals(dayFoodEntries);
       setStartDate(new Date(date));
+      setSelectedUser(_id);
     } else if (!isAdmin && action === "add") {
       setTargetedCalories(user.caloriesTarget);
+      setSelectedUser(user.id);
     }
   }, [selectedUser]);
 
@@ -76,7 +84,7 @@ const EditableModal = (props) => {
     const mealExists = enteredMeals.findIndex((x) => x.mealId === id);
     if (mealExists !== -1) {
       const entry = {
-        itemName: "",
+        itemName: "Food Item",
         calories: 0,
       };
       let newEntries = enteredMeals;
